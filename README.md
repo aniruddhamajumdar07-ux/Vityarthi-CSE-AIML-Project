@@ -104,9 +104,3 @@ The Great Gatsby | F. Scott Fitzgerald | Available: 2 | Total: 3
 - Add user accounts and per-user borrow history
 - Search books by author or keyword
 - Due date tracking and overdue alerts
-
----
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
