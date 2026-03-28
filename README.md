@@ -1,4 +1,4 @@
-# 📚 Library Book Management System
+#  Library Book Management System
 
 A simple command-line application for managing library books — add titles, track copies, borrow, and return books with ease.
 
