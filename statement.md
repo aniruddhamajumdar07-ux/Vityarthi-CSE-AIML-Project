@@ -1,6 +1,5 @@
 ---
 title: "Project Statement: Library Book Management System"
-author: "Development Team"
 date: "March 2026"
 ---
 
