@@ -136,6 +136,4 @@ We can make this project by:
 
 ---
 
-## 📄 License
 
-This project is, for research purposes only.
