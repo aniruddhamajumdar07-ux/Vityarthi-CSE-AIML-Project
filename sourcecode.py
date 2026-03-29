@@ -38,12 +38,11 @@ df['Crop_Yield_quintal_per_hectare'] = df['Crop_Yield_quintal_per_hectare'].clip
 
 print("Dataset Shape:", df.shape)
 print(df.head())
-
 print("\nSummary Statistics:")
 print(df.describe())
 
 plt.figure(figsize=(10, 8))
-sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
+sns.heatmap(df.corr(numeric_only=True), annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Feature Correlation with Crop Yield')
 plt.show()
 
@@ -59,15 +58,12 @@ models = {
 }
 
 results = []
-
 for name, model in models.items():
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-
     mae = mean_absolute_error(y_test, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     r2 = r2_score(y_test, y_pred)
-
     results.append({
         'Model': name,
         'MAE': round(mae, 2),
@@ -81,7 +77,8 @@ print(results_df)
 
 best_model = models["Random Forest"]
 
-print("\total=== Farmer Prediction Example (Madhya Pradesh) ===")
+print("\n=== Farmer Prediction Example (Madhya Pradesh) ===")
+
 new_farm = pd.DataFrame({
     'Rainfall_mm': [850],
     'Avg_Temperature_C': [28.5],
@@ -97,7 +94,7 @@ predicted_yield = best_model.predict(new_farm)[0]
 print(f"Predicted Crop Yield: {predicted_yield:.1f} quintals per hectare")
 
 if predicted_yield < 25:
-    print("  Low yield expected. Recommend increasing irrigation or fertilizer.")
+    print(" Low yield expected. Recommend increasing irrigation or fertilizer.")
 else:
     print(" Expected good yield under current conditions.")
 
