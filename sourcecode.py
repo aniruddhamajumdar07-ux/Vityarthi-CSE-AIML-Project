@@ -74,5 +74,5 @@ def main():
         else:
             print("Invalid command! Please try again.")
 
-if name == "main":
+if __name__ == "__main__":
     main()
