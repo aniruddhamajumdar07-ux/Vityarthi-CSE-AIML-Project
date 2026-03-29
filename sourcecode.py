@@ -1,78 +1,106 @@
-books = {}
-def add_book(title, author, copies):
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-    if title in books:
-        books[title]["available"] += copies
-        books[title]["total"] += copies
-    else:
-        books[title] = {
-            "author": author,
-            "available": copies,
-            "total": copies
-        }
-    return "Book added successfully."
+np.random.seed(42)
+n_samples = 400
 
-def borrow_book(title):
+data = {
+    'Rainfall_mm': np.random.uniform(400, 1200, n_samples),
+    'Avg_Temperature_C': np.random.uniform(22, 35, n_samples),
+    'Soil_Fertility_Score': np.random.uniform(4, 9, n_samples),
+    'Fertilizer_Used_kg_per_hectare': np.random.uniform(50, 250, n_samples),
+    'Pesticide_Used_kg_per_hectare': np.random.uniform(2, 15, n_samples),
+    'Irrigation_Hours_per_week': np.random.uniform(5, 25, n_samples),
+    'Previous_Year_Yield': np.random.uniform(15, 45, n_samples),
+    'Crop_Type_Code': np.random.randint(0, 5, n_samples)
+}
 
-    if title in books and books[title]["available"] > 0:
-        books[title]["available"] -= 1
-        return "Book borrowed successfully."
-    return "Book not available."
+df = pd.DataFrame(data)
 
-def return_book(title):
+df['Crop_Yield_quintal_per_hectare'] = (
+    0.35 * df['Rainfall_mm'] / 50 +
+    0.25 * df['Soil_Fertility_Score'] * 4 +
+    0.20 * df['Fertilizer_Used_kg_per_hectare'] / 10 +
+    0.10 * df['Irrigation_Hours_per_week'] +
+    0.10 * df['Previous_Year_Yield'] -
+    0.05 * df['Avg_Temperature_C'] * 0.8 +
+    np.random.normal(0, 6, n_samples)
+)
 
-    if title in books:
-        books[title]["available"] += 1
-        return "Book returned successfully."
-    return "Book not found."
+df['Crop_Yield_quintal_per_hectare'] = df['Crop_Yield_quintal_per_hectare'].clip(10, 60).round(1)
 
-def list_books():
+print("Dataset Shape:", df.shape)
+print(df.head())
 
-    if not books:
-        return ["No books available in the library."]
-    result = []
-    for title, info in books.items():
-        result.append(
-            f"{title} | {info['author']} | Available: {info['available']} | Total: {info['total']}"
-        )
-    return result
+print("\nSummary Statistics:")
+print(df.describe())
 
-def main():
-    print("Library Book Management System")
+plt.figure(figsize=(10, 8))
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Feature Correlation with Crop Yield')
+plt.show()
 
-    while True:
-        cmd = input("\nCommand (add / borrow / return / list / quit): ").strip().lower()
+X = df.drop('Crop_Yield_quintal_per_hectare', axis=1)
+output = df['Crop_Yield_quintal_per_hectare']
 
-        if cmd  == "add":
-            title = input("Enter title: ").strip()
-            author = input("Enter author: ").strip()
+X_train, X_test, y_train, y_test = train_test_split(X, output, test_size=0.25, random_state=42)
 
-            try:
-                copies = int(input("Enter number of copies: "))
-            except:
-                print("Invalid number!")
-                continue
+models = {
+    "Linear Regression": LinearRegression(),
+    "Decision Tree": DecisionTreeRegressor(random_state=42, max_depth=6),
+    "Random Forest": RandomForestRegressor(n_estimators=150, random_state=42)
+}
 
-            print(add_book(title, author, copies))
+results = []
 
-        elif cmd  == "borrow":
-            title = input("Enter title: ").strip()
-            print(borrow_book(title))
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
 
-        elif cmd  == "return":
-            title = input("Enter title: ").strip()
-            print(return_book(title))
+    mae = mean_absolute_error(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    r2 = r2_score(y_test, y_pred)
 
-        elif cmd  == "list":
-            for line in list_books():
-                print(line)
+    results.append({
+        'Model': name,
+        'MAE': round(mae, 2),
+        'RMSE': round(rmse, 2),
+        'R² Score': round(r2, 4)
+    })
 
-        elif cmd  == "quit":
-            print("Exiting system.")
-            break
+results_df = pd.DataFrame(results)
+print("\nModel Performance Comparison:")
+print(results_df)
 
-        else:
-            print("Invalid command! Please try again.")
+best_model = models["Random Forest"]
 
-if __name__ == "__main__":
-    main()
+print("\total=== Farmer Prediction Example (Madhya Pradesh) ===")
+new_farm = pd.DataFrame({
+    'Rainfall_mm': [850],
+    'Avg_Temperature_C': [28.5],
+    'Soil_Fertility_Score': [7.2],
+    'Fertilizer_Used_kg_per_hectare': [180],
+    'Pesticide_Used_kg_per_hectare': [8],
+    'Irrigation_Hours_per_week': [18],
+    'Previous_Year_Yield': [32],
+    'Crop_Type_Code': [1]
+})
+
+predicted_yield = best_model.predict(new_farm)[0]
+print(f"Predicted Crop Yield: {predicted_yield:.1f} quintals per hectare")
+
+if predicted_yield < 25:
+    print("  Low yield expected. Recommend increasing irrigation or fertilizer.")
+else:
+    print(" Expected good yield under current conditions.")
+
+import joblib
+joblib.dump(best_model, 'crop_yield_predictor.pkl')
+print("\nModel saved successfully!")
