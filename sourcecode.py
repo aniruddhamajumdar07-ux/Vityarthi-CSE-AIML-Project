@@ -67,7 +67,6 @@ models = {
 }
 
 results = []
-
 for name, model in models.items():
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
