@@ -1,16 +1,16 @@
-# 🌾 Crop Yield Predictor. A Simple Tool to Help Farmers
+#  Crop Yield Predictor. A Simple Tool to Help Farmers
 
 This is a project that uses machine learning to predict how much a crop will yield. It is based on things that affect farming like how much it rains and the temperature. I built this project using Python and some other tools. It is really useful for places like Madhya Pradesh where farmers can make decisions with the right information.
 
 ---
 
-## 📌 What This Project Does
+##  What This Project Does
 
 Farmers often have a time guessing how much their crops will yield. This tool looks at things like how much it rains the temperature, the quality of the soil and how much fertilizer is used. Then it uses models to predict what the yield will be. It can also tell if a farm is likely to have a yield and suggest things to do to make it better.
 
 ---
 
-## 🗂️ Project Structure
+##  Project Structure
 
 ```
 crop-yield-predictor/
@@ -48,7 +48,7 @@ This will do a few things:
 
 ---
 
-## 🌱 Input Features
+##  Input Features
 
 Here are the things we look at to predict the yield:
 
@@ -65,7 +65,7 @@ We use these to predict the **Crop Yield in quintals per hectare**
 
 ---
 
-## 🤖 Models Trained
+##  Models Trained
 
 We trained a few models to see which one works best:
 
@@ -75,7 +75,7 @@ We trained a few models to see which one works best:
 
 ---
 
-## 📊 Sample Output
+##  Sample Output
 
 Here is how well the models did:
 
@@ -119,13 +119,13 @@ print(model.predict(farm)[0])
 
 ---
 
-## 📍 Real-World Application
+##  Real-World Application
 
 This project is based on farming conditions in Madhya Pradesh. We used numbers for things like rainfall and temperature.
 
 ---
 
-## 🔮 Future Improvements
+##  Future Improvements
 
 We can make this project by:
 
