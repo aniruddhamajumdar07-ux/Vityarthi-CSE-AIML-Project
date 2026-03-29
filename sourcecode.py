@@ -9,15 +9,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 
-# ====================== SETTING UP REPRODUCIBILITY ======================
 np.random.seed(42)
 
-# ====================== DATA GENERATION ======================
 print("Generating synthetic crop yield dataset...\n")
 
 n_samples = 400
 
-# Creating realistic agricultural features
 data = {
     'Rainfall_mm': np.random.uniform(400, 1200, n_samples),
     'Avg_Temperature_C': np.random.uniform(22, 35, n_samples),
@@ -26,26 +23,23 @@ data = {
     'Pesticide_Used_kg_per_hectare': np.random.uniform(2, 15, n_samples),
     'Irrigation_Hours_per_week': np.random.uniform(5, 25, n_samples),
     'Previous_Year_Yield': np.random.uniform(15, 45, n_samples),
-    'Crop_Type_Code': np.random.randint(0, 5, n_samples)   # 0 to 4 representing different crops
+    'Crop_Type_Code': np.random.randint(0, 5, n_samples)
 }
 
 df = pd.DataFrame(data)
 
-# Generating target variable (Crop Yield) with realistic relationships + some noise
 df['Crop_Yield_quintal_per_hectare'] = (
-    0.35 * df['Rainfall_mm'] / 50 +                    # Rainfall has strong positive impact
-    0.25 * df['Soil_Fertility_Score'] * 4 +            # Soil quality is very important
-    0.20 * df['Fertilizer_Used_kg_per_hectare'] / 10 + # Fertilizer usage
-    0.10 * df['Irrigation_Hours_per_week'] +           # Irrigation helps
-    0.10 * df['Previous_Year_Yield'] -                 # Previous performance carries over
-    0.05 * df['Avg_Temperature_C'] * 0.8 +             # High temperature slightly reduces yield
-    np.random.normal(0, 6, n_samples)                  # Random real-world variation
+    0.35 * df['Rainfall_mm'] / 50 +
+    0.25 * df['Soil_Fertility_Score'] * 4 +
+    0.20 * df['Fertilizer_Used_kg_per_hectare'] / 10 +
+    0.10 * df['Irrigation_Hours_per_week'] +
+    0.10 * df['Previous_Year_Yield'] -
+    0.05 * df['Avg_Temperature_C'] * 0.8 +
+    np.random.normal(0, 6, n_samples)
 )
 
-# Keeping yield values realistic
 df['Crop_Yield_quintal_per_hectare'] = df['Crop_Yield_quintal_per_hectare'].clip(10, 60).round(1)
 
-# ====================== EXPLORATORY DATA ANALYSIS ======================
 print("Dataset Shape:", df.shape)
 print("\nFirst 5 rows of the dataset:")
 print(df.head())
@@ -53,14 +47,12 @@ print(df.head())
 print("\nSummary Statistics:")
 print(df.describe().round(2))
 
-# Correlation Heatmap
 plt.figure(figsize=(10, 8))
 sns.heatmap(df.corr(numeric_only=True), annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
 plt.title('Feature Correlation Heatmap - Crop Yield Prediction')
 plt.tight_layout()
 plt.show()
 
-# ====================== MODEL TRAINING & EVALUATION ======================
 print("\nTraining Machine Learning models...\n")
 
 X = df.drop('Crop_Yield_quintal_per_hectare', axis=1)
@@ -68,7 +60,6 @@ y = df['Crop_Yield_quintal_per_hectare']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
 
-# Defining models
 models = {
     "Linear Regression": LinearRegression(),
     "Decision Tree": DecisionTreeRegressor(random_state=42, max_depth=6),
@@ -92,16 +83,13 @@ for name, model in models.items():
         'R2 Score': round(r2, 4)
     })
 
-# Display results
 results_df = pd.DataFrame(results)
 print("Model Performance Comparison:")
 print(results_df.to_string(index=False))
 
-# ====================== BEST MODEL & PREDICTION ======================
 best_model = models["Random Forest"]
 print("\nBest performing model selected: Random Forest")
 
-# Example prediction for a farmer in Madhya Pradesh
 print("\n=== Farmer Prediction Example (Madhya Pradesh Conditions) ===")
 
 new_farm = pd.DataFrame({
@@ -124,7 +112,6 @@ if predicted_yield < 25:
 else:
     print("Good yield is expected under the current conditions.")
 
-# ====================== SAVE THE MODEL ======================
 joblib.dump(best_model, 'crop_yield_predictor.pkl')
 print("\nModel saved successfully as 'crop_yield_predictor.pkl'")
-print("You can now load this model anytime using: joblib.load('crop_yield_predictor.pkl')")
+print("You can load it anytime with: joblib.load('crop_yield_predictor.pkl')")
