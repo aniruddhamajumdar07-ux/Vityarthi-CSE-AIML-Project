@@ -1,4 +1,4 @@
-# 📋 Problem Statement
+# Problem Statement
 
 ## Project **Crop Yield Prediction Using Machine Learning**
 
